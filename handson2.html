@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <html>
+<head>
+<body>
+    <h1>Backtracking</h1>
+    <p>Copyright ©2002 by David Matuszek</p>
+    <p> Backtracking is a form of recursion.</p>
+    <p>The usual scenario is that you are faced with a number of options, and you must choose one of these. After you make your choice you will get a new set of options; just what set of options you get depends on what choice you made. This procedure is repeated over and over until you reach a final state. If you made a good sequence of choices, your final state is a goal state; if you didn't, it isn't.</p>
+    <p>The usual scenario is that you are faced with a number of options, and you must choose one of these. After you make your choice you will get a new set of options; just what set of options you get depends on what choice you made. This procedure is repeated over and over until you reach a final state. If you made a good sequence of choices, your final state is a goal state; if you didn't, it isn't.</p>
+    <p>Suppose you get to a bad leaf. You can backtrack to continue the search for a good leaf by revoking your most recent choice, and trying out the next option in that set of options. If you run out of options, revoke the choice that got you here, and try another choice at that node. If you end up at the root with no options left, there are no good leaves to be foun</p>
+    <p>This needs an example.</p>
+    <center><img src="https://akarsh-gupta007.github.io/backtracking/treesearch.gif"alt="google image"width="200"length="200"></a></center>
+    <ol type="l">
+        <li> Starting at Root, your options are A and B </li>
+        <li> You choose A. At A, your options are C and D. You choose C.</li>
+        <li> C is bad. Go back to A. At A, you have already tried C, and it failed. Try D.</li>
+        <li> D is bad. Go back to A.</li>
+        <li> At A, you have no options left to try. Go back to Root.</li>
+        <li> Root, you have already tried A. Try B</li>
+        <li> B, your options are E and F. Try E.</li>
+        <li> E is good. Congratulations!</li>
+    </ol>
+    <p>In this example we drew a picture of a tree. The tree is an abstract model of the possible sequences of choices we could make. There is also a data structure called a tree, but usually we don't have a data structure to tell us what choices we have. (If we do have an actual tree data structure, backtracking on it is called depth-first tree searching.) </p>
+    <h2>The backtracking algorithm.</h2>
+    <p>Here is the algorithm (in pseudocode) for doing backtracking from a given node n:</p>
+    <pre><font color="red">
+        boolean solve(Node n) {
+            if n is a leaf node {
+                if the leaf is a goal node, return true
+                else return false
+            } else {
+                for each child c of n {
+                    if solve(c) succeeds, return true
+                }
+                return false
+            }
+        }
+    </font></pre>
+    <p>Notice that the algorithm is expressed as a boolean function. This is essential to understanding the algorithm. If solve(n) true, that means node n is part of a solution--that is, node n is one of the nodes on a path from the root to some goal node. We say that n is solvable.solve(n) false, then there is no path that includes n to any goal node</p>
+    <p>How does this work?</p>
+    <ul>
+        <li>If any child of n is solvable,then n is solvable</li>
+        <li>If no child of n is solvable, then n is not solvable.</li>
+    </ul>
+    <p>Hence, to decide whether any non-leaf node n is solvable (part of a path to a goal node), all you have to do is test whether any child of n is solvable. This is done recursively, on each child of n. In the above code, this is done by the lines</p>
+<pre><font color="red"> for each child c of n {
+            if solve(c) succeeds, return true
+        }
+        return false
+        </pre></font>
+<p>Eventually the recursion will "bottom" out at a leaf node. If the leaf node is a goal node, it is solvable; if the leaf node is not a goal node, it is not solvable. This is our base case. In the above code, this is done by the lines</p>
+<pre><font color="red">if n is a leaf node {
+         if the leaf is a goal node, return true
+         else return false
+        }</pre></font>
+<p>The backtracking algorithm is simple but important. You should understand it thoroughly. Another way of stating it is as follows:</p>
+   <ul style="list-style-type:disc;">
+<li>To search a tree:</li>
+</ul>
+<ol type="l">
+<li>If the tree consists of a single leaf, test whether it is a goal node,</li>
+<li>Otherwise,search the subtrees until you find one containing a goal node, or until you have searched them all unsuccessfully.</li>
+</ol>
+<h2>Non-recursive backtracking, using a stack</h2>
+<p>Backtracking is a rather typical recursive algorithm, and any recursive algorithm can be rewritten as a stack algorithm. In fact, that is how your recursive algorithms are translated into machine or assembly language</p>
+<pre><font color="red"> boolean solve(Node n) {
+            put node n on the stack;
+            while the stack is not empty {
+                if the node at the top of the stack is a leaf {
+                    if it is a goal node, return true
+                    else pop it off the stack
+                }
+                else {
+                    if the node at the top of the stack has untried children
+                        push the next untried child onto the stack
+                    else pop the node off the stack
+            
+            }
+            return false
+        }</pre></font>
+<p>Starting from the root, the only nodes that can be pushed onto the stack are the children of the node currently on the top of the stack, and these are only pushed on one child at a time; hence, the nodes on the stack at all times describe a valid path in the tree. Nodes are removed from the stack only when it is known that they have no goal nodes among their descendents. Therefore, if the root node gets removed (making the stack empty), there must have been no goal nodes at all, and no solution to the problem.</p>
+<p>When the stack algorithm terminates successfully, the nodes on the stack form (in reverse order) a path from the root to a goal node</p>
+<p>Similarly, when the recursive algorithm finds a goal node, the path information is embodied (in reverse order) in the sequence of recursive calls. Thus as the recursion unwinds, the path can be recovered one node at a time, by (for instance) printing the node at the current level, or storing it in an array.</p>
+<p>Here is the recursive backtracking algorithm, modified slightly to print (in reverse order) the nodes along the successful path:</p>
+<pre><font color="red"> boolean solve(Node n) {
+         if n is a leaf node {
+             if the leaf is a goal node {
+                 print n
+                 return true
+             }
+                 else return false
+            } else {
+                for each child c of n {
+                    if solve(c) succeeds {
+                        print n
+                        return true
+                    }
+                }
+                return false
+            }
+        }</pre></font>
+<h3>Keeping backtracking simple</h3>
+<p>All of these versions of the backtracking algorithm are pretty simple, but when applied to a real problem, they can get pretty cluttered up with details. Even determining whether the node is a leaf can be complex: for example, if the path represents a series of moves in a chess endgame problem, the leaves are the checkmate and stalemate solutions.</p>
+<p>To keep the program clean, therefore, tests like this should be buried in methods. In a chess game, for example, you could test whether a node is a leaf by writing a gameOver method (or you could even call itisLeaf).This method would encapsulate all the ugly details of figuring out whether any possible moves remain.</p>
+<p>Notice that the backtracking altorithms require us to keep track, for each node on the current path, which of its children have been tried already (so we don't have to try them again). In the above code we made this look simple, by just saying for each child c of n. In reality, it may be difficult to figure out what the possible children are, and there may be no obvious way to step through them. In chess, for example, a node can represent one arrangement of pieces on a chessboard, and each child of that node can represent the arrangement after some piece has made a legal move. How do you find these children, and how do you keep track of which ones you've already examined?</p>
+<p>The most straightforward way to keep track of which children of the node have been tried is as follows: Upon initial entry to the node (that is, when you first get there from above), make a list of all its children. As you try each child, take it off the list. When the list is empty, there are no remaining untried children, and you can return "failure." This is a simple approach, but it may require quite a lot of additional work.</p>
+<p>There is an easier way to keep track of which children have been tried, if you can define an ordering on the children. If there is an ordering, and you know which child you just tried, you can determine which child to try next.</p>
+<p>For example, you might be able to number the children 1 n, and try them in numerical order. Then, if you have just tried child k, you know that you have already tried children k-1, and you have not yet tried children k+1, through n. Or, if you are trying to color a map with just four colors, you can always try red first, then yellow, then green, then blue. If child yellow fails, you know to try child green next. If you are searching a maze, you can try choices in the order left, straight, right (or perhaps north, east, south, west).</p>
+<p>It isn't always easy to find a simple way to order the children of a node. In the chess game example, you might number your pieces (or perhaps the squares of the board) and try them in numerical order; but in addition each piece may also have several moves, and these must also be ordered.</p>
+<p>You can probably find some way to order the children of a node. If the ordering scheme is simple enough, you should use it; but if it is too cumbersome, you are better off keeping a list of untried children.</p>
+<h4>Example: TreeSearch</h4>
+<p>For starters, let's do the simplest possible example of backtracking, which is searching an actual tree. We will also use the simplest kind of tree, a binary tree.</p>
+<p>For starters, let's do the simplest possible example of backtracking, which is searching an actual tree. We will also use the simplest kind of tree, a binary tree.</p>
+<p>A binary tree is a data structure composed of node. One node is designed as theroot node. Each node can reference (point to) zero, one,or, teo other nides, which are called itschildren . the children are refered to as the left child and/or rihgt child. All nodes are reachable (by one or more steps) from the root node, and there are no cycles. For our purposes, although this is not part of the definition of a binary tree, we will say that a node might or might not be a goal node, and will contain its name. The first example in this paper (which we repeat here) shows a binary tree.</p>
+<center><img src="https://akarsh-gupta007.github.io/backtracking/treesearch.gif"alt="google image"width="200"length="200"></a></center>
+<p>Here's a definition of the BinaryTree class:</p>
+<pre><font color="red">public class BinaryTree {
+        BinaryTree leftChild = null;
+        BinaryTree rightChild = null;
+        boolean isGoalNode = false;
+        String name;
+            
+        BinaryTree(String name, BinaryTree left, BinaryTree right, boolean isGoalNode) {
+            this.name = name;
+            leftChild = left;
+            rightChild = right;
+            this.isGoalNode = isGoalNode;
+        }
+    }
+    </pre></font>
+<p>next we will create a TreeSearch class, and in it we will define a method makeTree which constructs the above binary tree.</p>
+<pre><font color="red">static BinaryTree makeTree() {
+            BinaryTree root, a, b, c, d, e, f;
+            c = new BinaryTree("C", null, null, false);
+            d = new BinaryTree("D", null, null, false);
+            e = new BinaryTree("E", null, null, true);
+            f = new BinaryTree("F", null, null, false);
+            a = new BinaryTree("A", c, d, false);
+            b = new BinaryTree("B", e, f, false);
+            root = new BinaryTree("Root", a, b, false);
+            return root;
+        }</font></red>
+<p>Here's a main program to create a binary tree and try to solve it:</p>
+<pre><font color="red">  public static void main(String args[]) {
+            BinaryTree tree = makeTree();
+            System.out.println(solvable(tree));
+        }</pre></font>
+<p>And finally, here's the recursive backtracking routine to "solve" the binary tree by finding a goal node.</p>
+<pre><font color="red"> static boolean solvable(BinaryTree node) {
+   <font color="red"> /* 1 */</font>if (node == null) return false;
+   <font color="red"> /* 2 */</font> if (node.isGoalNode) return true;
+   <font color="red"> /* 3 */</font> if (solvable(node.leftChild)) return true;
+   <font color="red"> /* 4 */</font> if (solvable(node.rightChild)) return true;
+   <font color="red"> /* 5 */</font>  return false;
+                }</pre></font>
+<p>Here's what the numbered lines are doing:</p>
+<ol type="l">
+<li>If we are given a null node, it's not solvable. This statement is so that we can call this method with the children of a node, without first checking whether those children actually exist.</li>
+<li>If we are given a null node, it's not solvable. This statement is so that we can call this method with the children of a node, without first checking whether those children actually exist.</li>
+<li>See if the left child of node is solvable, and if so, conclude that node is solvable. We will only get to this line if node is non-null and is not a goal node, says to</li>
+<li>Do the same thing for the right child.</li>
+<li>Since neither child of node is solvable, node itself is not solvable.</li>
+</ol>
+<p>This program runs correctly and produces the unenlightening result true</p>
+<p>Each time we ask for another node, we have to check if it is null. In the above we put that check as the first thing insolvable. An alternative would be to check first whether each child exists, and recur only if they do. Here's that alternative version:</p>
+<pre><font color="red"> static boolean solvable(BinaryTree node) {
+         if (node.isGoalNode) return true;
+         if (node.leftChild != null && solvable(node.leftChild)) return true;
+         if (node.rightChild != null && solvable(node.rightChild)) return true;
+         return false;
+        }
+        </font></pre>
+<p>I think the first version is simpler, but the second version is slightly more efficient.</p>
+<h4>What are the children?</h4>
+<p>One of the things that simplifies the above binary tree search is that, at each choice point, you can ignore all the previous choices. Previous choices don't give you any information about what you should do next; as far as you know, both the left and the right child are possible solutions. In many problems, however, you may be able to eliminate children immediately, without recursion.</p>
+<p>Consider, for example, the problem of four-coloring a map. It is a theorem of mathematics that any map on a plane, no matter how convoluted the countries are, can be colored with at most four colors, so that no two countries that share a border are the same color.</p>
+<p>To color a map, you choose a color for the first country, then a color for the second country, and so on, until all countries are colored. There are two ways to do this:</p>
+<p><b>Method 1.</b>Try each of the four possible colors, and recur. When you run out of countries, check whether you are at a goal node.</p>
+<p><b>Method 2. </b>Try only those colors that have not already been used for an adjacent country, and recur. If and when you run out of countries, you have successfully colored the map.</p>
+<p>Let's apply each of these two methods to the problem of coloring a checkerboard. This should be easily solvable; after all, a checkerboard only needs two colors.</p>
+<p>In both methods, the colors are represented by integers, from to We define the following helper methods. The helper method code isn't displayed here because it's not i'mportant for understanding the method that does the backtracking.</p>
+<h3><font color="red">boolean mapIsOK()</font></h3>
+<p>Used by method 1 to check (at a leaf node) whether the entire map is colored correctly.</p>
+<h3><font color="red">boolean okToColor(int row, int column, int color)</font></h3>
+<p>Used by method 2 to check, at every node, whether there is an adjacent node already colored with the given color.</p>
+<p>int[] nextRowAndColumn(int row, int column)</p>
+<p> Used by both methods to find the next "country" (actually, the row and column of the next square on the checkerboard).</p>
+<p>Here's the code for method 1:</p>
+<pre><font color="red">boolean explore1(int row, int column, int color) {
+        if (row >= NUM_ROWS) return mapIsOK();
+        map[row][column] = color;
+        for (int nextColor = RED; nextColor <= BLUE; nextColor++) {
+            int[] next = nextRowAndColumn(row, column);
+            if (explore1(next[0], next[1], nextColor)) return true;
+        }
+        return false;
+    }</font>
+</pre>
+<p>And here's the code for method 2:</p>
+<pre><font color="red">boolean explore2(int row, int column, int color) {
+        if (row >= NUM_ROWS)  true;
+        if (okToColor(row, column, color)) {
+            map[row][column] = color;
+            for (int nextColor = RED; nextColor <= BLUE; nextColor++) {
+                int[] next = nextRowAndColumn(row, column);
+                if (explore2(next[0], next[1], nextColor)) return true;
+            }
+        }
+        return false;
+    }</pre></font>
+<p>Those appear pretty similar, and you might think they are equally good. However, the timing information suggests otherwise:<p>
+<h1>TABLES</h1>
+       <table border="2px" width="100%px">
+<tr>
+<th>2 by 3 map</th>
+<th>3 by 3 map</th>
+<th>3 by 4 map</th>
+
+
+    </body>
+</html>
+</body>
+</html>
